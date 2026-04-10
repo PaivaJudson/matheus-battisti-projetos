@@ -3,7 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calculadora de IMC</title>
+  <meta name="description" content="Calculadora de IMC gratuita: descubra seu Índice de Massa Corporal, veja sua classificação e receba dicas personalizadas para melhorar sua saúde." />
+  <meta name="keywords" content="calculadora IMC, índice de massa corporal, peso ideal, saúde, obesidade, sobrepeso" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#302b63" />
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="Calculadora de IMC — Índice de Massa Corporal" />
+  <meta property="og:description" content="Calcule seu IMC gratuitamente, veja sua classificação e receba dicas de saúde personalizadas." />
+  <meta property="og:locale"      content="pt_BR" />
+
+  <title>Calculadora de IMC — Índice de Massa Corporal</title>
+
   <style>
     * {
       margin: 0;
@@ -15,13 +27,14 @@
       min-height: 100vh;
       background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       padding: 20px;
     }
 
-    .card {
+    main {
       background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
@@ -34,25 +47,25 @@
       color: #fff;
     }
 
-    .header {
+    header {
       text-align: center;
       margin-bottom: 36px;
     }
 
-    .header .icon {
+    header .icon {
       font-size: 3rem;
       display: block;
       margin-bottom: 12px;
     }
 
-    .header h1 {
+    header h1 {
       font-size: 1.8rem;
       font-weight: 700;
       letter-spacing: -0.5px;
       color: #fff;
     }
 
-    .header p {
+    header p {
       margin-top: 6px;
       font-size: 0.9rem;
       color: rgba(255, 255, 255, 0.5);
@@ -158,20 +171,21 @@
       display: block;
     }
 
-    .result .imc-value {
+    .imc-value {
       font-size: 3rem;
       font-weight: 800;
       line-height: 1;
       margin-bottom: 6px;
+      display: block;
     }
 
-    .result .imc-label {
+    .imc-label {
       font-size: 1.1rem;
       font-weight: 600;
       margin-bottom: 12px;
     }
 
-    .result .imc-tip {
+    .imc-tip {
       font-size: 0.82rem;
       color: rgba(255, 255, 255, 0.6);
       line-height: 1.5;
@@ -230,8 +244,8 @@
     }
 
     /* cores por categoria */
-    .result.abaixo   { background: rgba(96, 165, 250, 0.15); border: 1px solid rgba(96, 165, 250, 0.3); }
-    .result.normal   { background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.3); }
+    .result.abaixo    { background: rgba(96, 165, 250, 0.15); border: 1px solid rgba(96, 165, 250, 0.3); }
+    .result.normal    { background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.3); }
     .result.sobrepeso { background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.3); }
     .result.obesidade1 { background: rgba(251, 146, 60, 0.15); border: 1px solid rgba(251, 146, 60, 0.3); }
     .result.obesidade2 { background: rgba(248, 113, 113, 0.15); border: 1px solid rgba(248, 113, 113, 0.3); }
@@ -312,64 +326,121 @@
       display: block;
       animation: fadeUp 0.3s ease;
     }
+
+    footer {
+      margin-top: 20px;
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.25);
+      text-align: center;
+      max-width: 440px;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="header">
-      <span class="icon">⚖️</span>
+
+  <main>
+    <header>
+      <span class="icon" aria-hidden="true">⚖️</span>
       <h1>Calculadora de IMC</h1>
       <p>Índice de Massa Corporal</p>
-    </div>
+    </header>
 
-    <div class="form-group">
-      <label for="peso">Peso</label>
-      <div class="input-wrapper">
-        <input type="number" id="peso" placeholder="Ex: 70" min="1" max="500" step="0.1" />
-        <span class="unit">kg</span>
+    <form id="formImc" novalidate onsubmit="calcular(event)">
+      <div class="form-group">
+        <label for="peso">Peso</label>
+        <div class="input-wrapper">
+          <input
+            type="number"
+            id="peso"
+            name="peso"
+            placeholder="Ex: 70"
+            min="1"
+            max="500"
+            step="0.1"
+            inputmode="decimal"
+            autocomplete="off"
+            required
+          />
+          <span class="unit" aria-hidden="true">kg</span>
+        </div>
       </div>
-    </div>
 
-    <div class="form-group">
-      <label for="altura">Altura</label>
-      <div class="input-wrapper">
-        <input type="number" id="altura" placeholder="Ex: 175" min="1" max="300" step="1" />
-        <span class="unit">cm</span>
+      <div class="form-group">
+        <label for="altura">Altura</label>
+        <div class="input-wrapper">
+          <input
+            type="number"
+            id="altura"
+            name="altura"
+            placeholder="Ex: 175"
+            min="1"
+            max="300"
+            step="1"
+            inputmode="numeric"
+            autocomplete="off"
+            required
+          />
+          <span class="unit" aria-hidden="true">cm</span>
+        </div>
       </div>
-    </div>
 
-    <button class="btn" onclick="calcular()">Calcular IMC</button>
+      <button type="submit" class="btn">Calcular IMC</button>
+    </form>
 
-    <p class="error-msg" id="error">Por favor, preencha peso e altura corretamente.</p>
+    <p class="error-msg" id="error" role="alert" aria-live="assertive">
+      Por favor, preencha peso e altura corretamente.
+    </p>
 
-    <div class="result" id="result">
-      <div class="imc-value" id="imcValor"></div>
-      <div class="imc-label" id="imcLabel"></div>
-      <div class="imc-tip"  id="imcTip"></div>
-      <ul class="dicas-lista" id="dicasLista"></ul>
-      <button class="btn-reiniciar" onclick="reiniciar()">&#8635; Calcular novamente</button>
-    </div>
+    <section
+      class="result"
+      id="result"
+      aria-live="polite"
+      aria-atomic="true"
+      aria-label="Resultado do cálculo de IMC"
+    >
+      <output class="imc-value" id="imcValor" for="peso altura"></output>
+      <p class="imc-label" id="imcLabel"></p>
+      <p class="imc-tip"   id="imcTip"></p>
+      <ul class="dicas-lista" id="dicasLista" aria-label="Dicas de saúde"></ul>
+      <button type="button" class="btn-reiniciar" onclick="reiniciar()">&#8635; Calcular novamente</button>
+    </section>
 
-    <div class="table-wrapper">
-      <p class="table-title">Tabela de referência</p>
+    <section class="table-wrapper" aria-label="Tabela de referência de IMC">
+      <h2 class="table-title">Tabela de referência</h2>
       <table>
+        <caption class="visually-hidden">Classificação do IMC segundo a Organização Mundial da Saúde</caption>
         <thead>
           <tr>
-            <th>Classificação</th>
-            <th>IMC</th>
+            <th scope="col">Classificação</th>
+            <th scope="col">IMC</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td><span class="dot" style="background:#93c5fd"></span>Abaixo do peso</td><td>&lt; 18,5</td></tr>
-          <tr><td><span class="dot" style="background:#6ee7b7"></span>Peso normal</td><td>18,5 – 24,9</td></tr>
-          <tr><td><span class="dot" style="background:#fde68a"></span>Sobrepeso</td><td>25,0 – 29,9</td></tr>
-          <tr><td><span class="dot" style="background:#fdba74"></span>Obesidade Grau I</td><td>30,0 – 34,9</td></tr>
-          <tr><td><span class="dot" style="background:#fca5a5"></span>Obesidade Grau II</td><td>35,0 – 39,9</td></tr>
-          <tr><td><span class="dot" style="background:#f87171"></span>Obesidade Grau III</td><td>&ge; 40,0</td></tr>
+          <tr><td><span class="dot" style="background:#93c5fd" aria-hidden="true"></span>Abaixo do peso</td><td>&lt; 18,5</td></tr>
+          <tr><td><span class="dot" style="background:#6ee7b7" aria-hidden="true"></span>Peso normal</td><td>18,5 – 24,9</td></tr>
+          <tr><td><span class="dot" style="background:#fde68a" aria-hidden="true"></span>Sobrepeso</td><td>25,0 – 29,9</td></tr>
+          <tr><td><span class="dot" style="background:#fdba74" aria-hidden="true"></span>Obesidade Grau I</td><td>30,0 – 34,9</td></tr>
+          <tr><td><span class="dot" style="background:#fca5a5" aria-hidden="true"></span>Obesidade Grau II</td><td>35,0 – 39,9</td></tr>
+          <tr><td><span class="dot" style="background:#f87171" aria-hidden="true"></span>Obesidade Grau III</td><td>&ge; 40,0</td></tr>
         </tbody>
       </table>
-    </div>
-  </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Este cálculo é informativo e não substitui avaliação médica profissional.</p>
+  </footer>
+
+  <style>
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+  </style>
 
   <script>
     const categorias = [
@@ -435,7 +506,9 @@
       },
     ];
 
-    function calcular() {
+    function calcular(event) {
+      event.preventDefault();
+
       const peso   = parseFloat(document.getElementById('peso').value);
       const altura = parseFloat(document.getElementById('altura').value);
       const errorEl  = document.getElementById('error');
@@ -460,7 +533,7 @@
 
       const lista = document.getElementById('dicasLista');
       lista.innerHTML = cat.dicas.map(d =>
-        `<li><span class="dica-icon">${d.icon}</span><span>${d.texto}</span></li>`
+        `<li><span class="dica-icon" aria-hidden="true">${d.icon}</span><span>${d.texto}</span></li>`
       ).join('');
 
       resultEl.classList.add('show', cat.classe);
@@ -468,7 +541,7 @@
     }
 
     function reiniciar() {
-      document.getElementById('peso').value  = '';
+      document.getElementById('peso').value   = '';
       document.getElementById('altura').value = '';
       document.getElementById('error').classList.remove('show');
       const resultEl = document.getElementById('result');
@@ -476,11 +549,6 @@
       document.getElementById('dicasLista').innerHTML = '';
       document.getElementById('peso').focus();
     }
-
-    // permitir Enter
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Enter') calcular();
-    });
   </script>
 </body>
 </html>
