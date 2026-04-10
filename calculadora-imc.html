@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de IMC</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+      color: #fff;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .header .icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #fff;
+    }
+
+    .header p {
+      margin-top: 6px;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 8px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 14px 50px 14px 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.25s, background 0.25s;
+      -moz-appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
+
+    input[type="number"]:focus {
+      border-color: #a78bfa;
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    input[type="number"]::placeholder {
+      color: rgba(255, 255, 255, 0.25);
+    }
+
+    .unit {
+      position: absolute;
+      right: 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.4);
+      pointer-events: none;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 16px;
+      margin-top: 8px;
+      background: linear-gradient(135deg, #a78bfa, #7c3aed);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+    }
+
+    .btn:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 28px rgba(124, 58, 237, 0.55);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .result {
+      margin-top: 28px;
+      padding: 24px;
+      border-radius: 16px;
+      text-align: center;
+      display: none;
+      animation: fadeUp 0.35s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result .imc-value {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .result .imc-label {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .result .imc-tip {
+      font-size: 0.82rem;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.5;
+    }
+
+    /* cores por categoria */
+    .result.abaixo   { background: rgba(96, 165, 250, 0.15); border: 1px solid rgba(96, 165, 250, 0.3); }
+    .result.normal   { background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.3); }
+    .result.sobrepeso { background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.3); }
+    .result.obesidade1 { background: rgba(251, 146, 60, 0.15); border: 1px solid rgba(251, 146, 60, 0.3); }
+    .result.obesidade2 { background: rgba(248, 113, 113, 0.15); border: 1px solid rgba(248, 113, 113, 0.3); }
+    .result.obesidade3 { background: rgba(239, 68, 68, 0.15);  border: 1px solid rgba(239, 68, 68, 0.3); }
+
+    .result.abaixo    .imc-value { color: #93c5fd; }
+    .result.normal    .imc-value { color: #6ee7b7; }
+    .result.sobrepeso .imc-value { color: #fde68a; }
+    .result.obesidade1 .imc-value { color: #fdba74; }
+    .result.obesidade2 .imc-value { color: #fca5a5; }
+    .result.obesidade3 .imc-value { color: #f87171; }
+
+    /* tabela */
+    .table-wrapper {
+      margin-top: 28px;
+    }
+
+    .table-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: rgba(255, 255, 255, 0.4);
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    thead th {
+      color: rgba(255, 255, 255, 0.45);
+      font-weight: 600;
+      text-align: left;
+      padding: 6px 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    tbody tr {
+      transition: background 0.2s;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    tbody td {
+      padding: 7px 8px;
+      color: rgba(255, 255, 255, 0.65);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .error-msg {
+      margin-top: 12px;
+      color: #fca5a5;
+      font-size: 0.85rem;
+      text-align: center;
+      display: none;
+    }
+
+    .error-msg.show {
+      display: block;
+      animation: fadeUp 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <span class="icon">⚖️</span>
+      <h1>Calculadora de IMC</h1>
+      <p>Índice de Massa Corporal</p>
+    </div>
+
+    <div class="form-group">
+      <label for="peso">Peso</label>
+      <div class="input-wrapper">
+        <input type="number" id="peso" placeholder="Ex: 70" min="1" max="500" step="0.1" />
+        <span class="unit">kg</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="altura">Altura</label>
+      <div class="input-wrapper">
+        <input type="number" id="altura" placeholder="Ex: 175" min="1" max="300" step="1" />
+        <span class="unit">cm</span>
+      </div>
+    </div>
+
+    <button class="btn" onclick="calcular()">Calcular IMC</button>
+
+    <p class="error-msg" id="error">Por favor, preencha peso e altura corretamente.</p>
+
+    <div class="result" id="result">
+      <div class="imc-value" id="imcValor"></div>
+      <div class="imc-label" id="imcLabel"></div>
+      <div class="imc-tip"  id="imcTip"></div>
+    </div>
+
+    <div class="table-wrapper">
+      <p class="table-title">Tabela de referência</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Classificação</th>
+            <th>IMC</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="dot" style="background:#93c5fd"></span>Abaixo do peso</td><td>&lt; 18,5</td></tr>
+          <tr><td><span class="dot" style="background:#6ee7b7"></span>Peso normal</td><td>18,5 – 24,9</td></tr>
+          <tr><td><span class="dot" style="background:#fde68a"></span>Sobrepeso</td><td>25,0 – 29,9</td></tr>
+          <tr><td><span class="dot" style="background:#fdba74"></span>Obesidade Grau I</td><td>30,0 – 34,9</td></tr>
+          <tr><td><span class="dot" style="background:#fca5a5"></span>Obesidade Grau II</td><td>35,0 – 39,9</td></tr>
+          <tr><td><span class="dot" style="background:#f87171"></span>Obesidade Grau III</td><td>&ge; 40,0</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const categorias = [
+      { max: 18.5, classe: 'abaixo',    label: 'Abaixo do peso',     tip: 'Considere consultar um nutricionista para avaliar sua dieta.' },
+      { max: 25.0, classe: 'normal',    label: 'Peso normal',         tip: 'Parabéns! Mantenha hábitos saudáveis de alimentação e exercícios.' },
+      { max: 30.0, classe: 'sobrepeso', label: 'Sobrepeso',           tip: 'Pequenas mudanças na dieta e atividade física já fazem diferença.' },
+      { max: 35.0, classe: 'obesidade1',label: 'Obesidade Grau I',    tip: 'Recomenda-se acompanhamento médico e mudança nos hábitos.' },
+      { max: 40.0, classe: 'obesidade2',label: 'Obesidade Grau II',   tip: 'Procure orientação médica para um plano de tratamento adequado.' },
+      { max: Infinity, classe: 'obesidade3', label: 'Obesidade Grau III', tip: 'Busque atendimento médico especializado o quanto antes.' },
+    ];
+
+    function calcular() {
+      const peso   = parseFloat(document.getElementById('peso').value);
+      const altura = parseFloat(document.getElementById('altura').value);
+      const errorEl  = document.getElementById('error');
+      const resultEl = document.getElementById('result');
+
+      errorEl.classList.remove('show');
+      resultEl.className = 'result';
+
+      if (!peso || !altura || peso <= 0 || altura <= 0) {
+        errorEl.classList.add('show');
+        return;
+      }
+
+      const alturaM = altura / 100;
+      const imc = peso / (alturaM * alturaM);
+
+      const cat = categorias.find(c => imc < c.max);
+
+      document.getElementById('imcValor').textContent = imc.toFixed(1).replace('.', ',');
+      document.getElementById('imcLabel').textContent = cat.label;
+      document.getElementById('imcTip').textContent   = cat.tip;
+
+      resultEl.classList.add('show', cat.classe);
+    }
+
+    // permitir Enter
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') calcular();
+    });
+  </script>
+</body>
+</html>
