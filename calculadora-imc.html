@@ -175,6 +175,58 @@
       font-size: 0.82rem;
       color: rgba(255, 255, 255, 0.6);
       line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .dicas-lista {
+      list-style: none;
+      text-align: left;
+      margin-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .dicas-lista li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.45;
+    }
+
+    .dicas-lista li .dica-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .btn-reiniciar {
+      width: 100%;
+      padding: 13px;
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, border-color 0.2s;
+    }
+
+    .btn-reiniciar:hover {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-reiniciar:active {
+      transform: translateY(0);
     }
 
     /* cores por categoria */
@@ -294,6 +346,8 @@
       <div class="imc-value" id="imcValor"></div>
       <div class="imc-label" id="imcLabel"></div>
       <div class="imc-tip"  id="imcTip"></div>
+      <ul class="dicas-lista" id="dicasLista"></ul>
+      <button class="btn-reiniciar" onclick="reiniciar()">&#8635; Calcular novamente</button>
     </div>
 
     <div class="table-wrapper">
@@ -319,12 +373,66 @@
 
   <script>
     const categorias = [
-      { max: 18.5, classe: 'abaixo',    label: 'Abaixo do peso',     tip: 'Considere consultar um nutricionista para avaliar sua dieta.' },
-      { max: 25.0, classe: 'normal',    label: 'Peso normal',         tip: 'Parabéns! Mantenha hábitos saudáveis de alimentação e exercícios.' },
-      { max: 30.0, classe: 'sobrepeso', label: 'Sobrepeso',           tip: 'Pequenas mudanças na dieta e atividade física já fazem diferença.' },
-      { max: 35.0, classe: 'obesidade1',label: 'Obesidade Grau I',    tip: 'Recomenda-se acompanhamento médico e mudança nos hábitos.' },
-      { max: 40.0, classe: 'obesidade2',label: 'Obesidade Grau II',   tip: 'Procure orientação médica para um plano de tratamento adequado.' },
-      { max: Infinity, classe: 'obesidade3', label: 'Obesidade Grau III', tip: 'Busque atendimento médico especializado o quanto antes.' },
+      {
+        max: 18.5, classe: 'abaixo', label: 'Abaixo do peso',
+        tip: 'Seu IMC indica que você está abaixo do peso ideal. Consulte um profissional de saúde.',
+        dicas: [
+          { icon: '🥗', texto: 'Aumente a ingestão calórica com alimentos nutritivos como abacate, oleaginosas e proteínas.' },
+          { icon: '💪', texto: 'Pratique musculação para ganhar massa muscular de forma saudável.' },
+          { icon: '🩺', texto: 'Consulte um nutricionista para montar um plano alimentar personalizado.' },
+          { icon: '😴', texto: 'Durma entre 7 e 9 horas por noite — o sono é essencial para ganho de peso saudável.' },
+        ]
+      },
+      {
+        max: 25.0, classe: 'normal', label: 'Peso normal',
+        tip: 'Parabéns! Você está na faixa de peso ideal. Continue mantendo seus hábitos saudáveis.',
+        dicas: [
+          { icon: '🏃', texto: 'Mantenha pelo menos 150 min de atividade física moderada por semana.' },
+          { icon: '🥦', texto: 'Priorize uma dieta variada com frutas, vegetais, proteínas e grãos integrais.' },
+          { icon: '💧', texto: 'Beba no mínimo 2 litros de água por dia para manter o organismo hidratado.' },
+          { icon: '🧘', texto: 'Cuide da saúde mental: pratique meditação ou atividades de lazer regularmente.' },
+        ]
+      },
+      {
+        max: 30.0, classe: 'sobrepeso', label: 'Sobrepeso',
+        tip: 'Você está acima do peso ideal. Pequenas mudanças no dia a dia já fazem grande diferença.',
+        dicas: [
+          { icon: '🚶', texto: 'Comece caminhando 30 minutos por dia — é simples e muito eficaz.' },
+          { icon: '🍽️', texto: 'Reduza o consumo de alimentos ultraprocessados, frituras e açúcar refinado.' },
+          { icon: '💧', texto: 'Substitua refrigerantes e sucos industrializados por água ou chás naturais.' },
+          { icon: '📅', texto: 'Estabeleça uma rotina alimentar com horários regulares para as refeições.' },
+        ]
+      },
+      {
+        max: 35.0, classe: 'obesidade1', label: 'Obesidade Grau I',
+        tip: 'Atenção! É recomendável buscar acompanhamento médico e mudanças nos hábitos de vida.',
+        dicas: [
+          { icon: '🩺', texto: 'Procure um médico para avaliação completa e orientação sobre o tratamento.' },
+          { icon: '🥗', texto: 'Adote uma dieta com redução calórica acompanhada por nutricionista.' },
+          { icon: '🏊', texto: 'Atividades de baixo impacto como natação ou caminhada protegem as articulações.' },
+          { icon: '📵', texto: 'Reduza o tempo de tela e o sedentarismo ao longo do dia.' },
+        ]
+      },
+      {
+        max: 40.0, classe: 'obesidade2', label: 'Obesidade Grau II',
+        tip: 'Situação de atenção. Procure orientação médica para um plano de tratamento adequado.',
+        dicas: [
+          { icon: '🏥', texto: 'Busque acompanhamento médico urgente para avaliar riscos cardiovasculares e metabólicos.' },
+          { icon: '🧑‍⚕️', texto: 'Uma equipe multidisciplinar (médico, nutricionista, psicólogo) aumenta o sucesso do tratamento.' },
+          { icon: '🚭', texto: 'Evite álcool e cigarro — eles agravam os riscos associados ao excesso de peso.' },
+          { icon: '❤️', texto: 'Monitore pressão arterial, glicemia e colesterol regularmente.' },
+        ]
+      },
+      {
+        max: Infinity, classe: 'obesidade3', label: 'Obesidade Grau III',
+        tip: 'Situação crítica. Busque atendimento médico especializado o quanto antes.',
+        dicas: [
+          { icon: '🚨', texto: 'Procure atendimento médico especializado imediatamente para avaliação e tratamento.' },
+          { icon: '🏥', texto: 'Converse com seu médico sobre todas as opções disponíveis, incluindo cirurgia bariátrica.' },
+          { icon: '🧠', texto: 'O apoio psicológico é fundamental — a obesidade severa tem forte componente emocional.' },
+          { icon: '👨‍👩‍👧', texto: 'Envolva sua família e rede de apoio no processo de mudança de hábitos.' },
+        ]
+      },
     ];
 
     function calcular() {
@@ -350,7 +458,23 @@
       document.getElementById('imcLabel').textContent = cat.label;
       document.getElementById('imcTip').textContent   = cat.tip;
 
+      const lista = document.getElementById('dicasLista');
+      lista.innerHTML = cat.dicas.map(d =>
+        `<li><span class="dica-icon">${d.icon}</span><span>${d.texto}</span></li>`
+      ).join('');
+
       resultEl.classList.add('show', cat.classe);
+      resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function reiniciar() {
+      document.getElementById('peso').value  = '';
+      document.getElementById('altura').value = '';
+      document.getElementById('error').classList.remove('show');
+      const resultEl = document.getElementById('result');
+      resultEl.className = 'result';
+      document.getElementById('dicasLista').innerHTML = '';
+      document.getElementById('peso').focus();
     }
 
     // permitir Enter
